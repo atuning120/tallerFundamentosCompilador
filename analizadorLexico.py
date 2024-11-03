@@ -37,7 +37,10 @@ reservadas={
 tokens=tokens + list(reservadas.values())
 
 # tokens
+
+# caracteres ignorados
 t_ignore=" \t"
+
 t_PTOCOMA = r';'
 t_LLAVEIZQ= r'{'
 t_LLAVEDER= r'}'
