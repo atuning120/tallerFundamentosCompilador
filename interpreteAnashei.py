@@ -1,9 +1,10 @@
-import analizadorLexico as lexico
+import analizadorLexico as alex
 import ts as TS
 from expresionesSintactico import *
 from analizadorSintactico import *
 
-f= open("entrada.txt", "r")
+f = open("./entrada.txt", "r")
 input = f.read()
 
-instrucciones = lexico.parse(input)
+instrucciones = alex.parse(input)
+ts_global = TS.TablaDeSimbolos()

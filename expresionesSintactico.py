@@ -1,24 +1,21 @@
 from enum import Enum
 
-class OPERACION_ARITMETICA(Enum):
-    SUMA = 1
-    RESTA = 2
-    MULTIPLICACION = 3
-    DIVISION = 4
-    POTENCIA = 5
-    MODULO = 6
+class OPERACION_ARITMETICA(Enum) :
+    MAS = 1
+    MENOS = 2
+    POR = 3
+    DIVIDIDO = 4
 
-class OPERACION_LOGICA(Enum):
+class OPERACION_LOGICA(Enum) :
     MAYOR_QUE = 1
     MENOR_QUE = 2
     IGUAL_QUE = 3
     NO_IGUAL_QUE = 4
-    AND = 5
-    OR = 6
-    NOT = 7
 
 class ExpresionNumerica:
-    '''Esta clase representa una expresion aritmetica'''
+    '''
+        Esta clase representa una expresión numérica
+    '''
 
 class ExpresionBinaria(ExpresionNumerica) :
     '''

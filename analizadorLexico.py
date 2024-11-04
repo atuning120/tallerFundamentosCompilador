@@ -1,11 +1,3 @@
-
-# -----------------------------------------------------------------------------
-# Rainman Sián
-# 26-02-2020
-#
-# Ejemplo interprete sencillo con Python utilizando ply en Ubuntu
-# -----------------------------------------------------------------------------
-
 reservadas = {
     'numero' : 'NUMERO',
     'mostrar' : 'MOSTRAR',
@@ -214,8 +206,8 @@ def p_expresion_logica(t) :
                         | expresion_numerica NIGUALQUE expresion_numerica'''
     if t[2] == '>'    : t[0] = ExpresionLogica(t[1], t[3], OPERACION_LOGICA.MAYOR_QUE)
     elif t[2] == '<'  : t[0] = ExpresionLogica(t[1], t[3], OPERACION_LOGICA.MENOR_QUE)
-    elif t[2] == '==' : t[0] = ExpresionLogica(t[1], t[3], OPERACION_LOGICA.IGUAL)
-    elif t[2] == '!=' : t[0] = ExpresionLogica(t[1], t[3], OPERACION_LOGICA.DIFERENTE)
+    elif t[2] == '==' : t[0] = ExpresionLogica(t[1], t[3], OPERACION_LOGICA.IGUAL_QUE)
+    elif t[2] == '!=' : t[0] = ExpresionLogica(t[1], t[3], OPERACION_LOGICA.NO_IGUAL_QUE)
 
 def p_error(t):
     print(t)
