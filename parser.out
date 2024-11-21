@@ -1,0 +1,118 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    PRINT
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> statement_list
+Rule 2     statement_list -> statement_list statement
+Rule 3     statement_list -> statement
+Rule 4     statement -> print_statement
+Rule 5     statement -> assign_statement
+Rule 6     statement -> if_statement
+Rule 7     statement -> while_statement
+Rule 8     statement -> for_statement
+Rule 9     statement -> function_definition
+Rule 10    statement -> return_statement
+Rule 11    statement -> expression SEMICOLON
+Rule 12    expression -> INPUT LPAREN print_arguments RPAREN
+Rule 13    print_arguments -> print_arguments COMMA expression
+Rule 14    print_arguments -> expression
+Rule 15    assign_statement -> lvalue EQUALS expression SEMICOLON
+Rule 16    lvalue -> ID
+Rule 17    lvalue -> expression LBRACKET expression RBRACKET
+Rule 18    if_statement -> IF LPAREN expression RPAREN block
+Rule 19    if_statement -> IF LPAREN expression RPAREN block ELSE block
+Rule 20    while_statement -> WHILE LPAREN expression RPAREN block
+Rule 21    for_statement -> FOR LPAREN assign_statement expression SEMICOLON assign_statement RPAREN block
+Rule 22    function_definition -> FUNC ID LPAREN parameters RPAREN block
+Rule 23    parameters -> parameters COMMA ID
+Rule 24    parameters -> ID
+Rule 25    parameters -> empty
+Rule 26    block -> LKEY statement_list RKEY
+Rule 27    return_statement -> RETURN expression SEMICOLON
+Rule 28    expression -> expression PLUS expression
+Rule 29    expression -> expression MINUS expression
+Rule 30    expression -> expression MULT expression
+Rule 31    expression -> expression DIVIDE expression
+Rule 32    expression -> expression MODULE expression
+Rule 33    expression -> expression LESS expression
+Rule 34    expression -> expression GREATER expression
+Rule 35    expression -> expression LESSEQ expression
+Rule 36    expression -> expression GREATEREQ expression
+Rule 37    expression -> expression EQ expression
+Rule 38    expression -> expression NEQ expression
+Rule 39    expression -> expression AND expression
+Rule 40    expression -> expression OR expression
+Rule 41    expression -> NOT expression
+Rule 42    expression -> MINUS expression
+Rule 43    expression -> LPAREN expression RPAREN
+Rule 44    expression -> NUMBER
+Rule 45    expression -> STRING
+Rule 46    expression -> CHAR
+Rule 47    expression -> BOOLEAN
+Rule 48    expression -> ID
+Rule 49    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 39
+BOOLEAN              : 47
+CHAR                 : 46
+COMMA                : 13 23
+DIVIDE               : 31
+ELSE                 : 19
+EQ                   : 37
+EQUALS               : 15
+FOR                  : 21
+FUNC                 : 22
+GREATER              : 34
+GREATEREQ            : 36
+ID                   : 16 22 23 24 48
+IF                   : 18 19
+INPUT                : 12
+LBRACKET             : 17
+LESS                 : 33
+LESSEQ               : 35
+LKEY                 : 26
+LPAREN               : 12 18 19 20 21 22 43
+MINUS                : 29 42
+MODULE               : 32
+MULT                 : 30
+NEQ                  : 38
+NOT                  : 41
+NUMBER               : 44
+OR                   : 40
+PLUS                 : 28
+PRINT                : 
+RBRACKET             : 17
+RETURN               : 27
+RKEY                 : 26
+RPAREN               : 12 18 19 20 21 22 43
+SEMICOLON            : 11 15 21 27
+STRING               : 45
+WHILE                : 20
+error                : 
+
+Nonterminals, with rules where they appear
+
+assign_statement     : 5 21 21
+block                : 18 19 19 20 21 22
+empty                : 25
+expression           : 11 13 14 15 17 17 18 19 20 21 27 28 28 29 29 30 30 31 31 32 32 33 33 34 34 35 35 36 36 37 37 38 38 39 39 40 40 41 42 43
+for_statement        : 8
+function_definition  : 9
+if_statement         : 6
+lvalue               : 15
+parameters           : 22 23
+print_arguments      : 12 13
+print_statement      : 4
+program              : 0
+return_statement     : 10
+statement            : 2 3
+statement_list       : 1 2 26
+while_statement      : 7
+

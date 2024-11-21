@@ -1,0 +1,14 @@
+// Declaración de variables
+x = 10;
+y = 20;
+z = x + y;
+
+// Impresión de resultados
+show("La suma de x e y es:", z);
+
+// Condicionales
+if (x < y) {
+    show("x es menor que y");
+} else {
+    show("x no es menor que y");
+}
