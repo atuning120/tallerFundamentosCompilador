@@ -17,7 +17,7 @@ reserved = {
     'for': 'FOR',
     'while': 'WHILE',
     'mission': 'FUNC',
-    'answer': 'RETURN',
+    'return': 'RETURN',
 }
 
 tokens+=list(reserved.values())

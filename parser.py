@@ -142,9 +142,11 @@ class Block:
     def execute(self):
         for stmt in self.statements:
             result = stmt.execute()
+            # Si encontramos un retorno, lo propagamos
             if isinstance(result, Return):
-                return result
+                return result.expression.evaluate()
         return None
+
 
 class WhileLoop:
     def __init__(self, condition, block):
@@ -181,9 +183,15 @@ class Function:
 
         result = self.block.execute()
 
+        # Restaurar las variables después de ejecutar la función
         variables.clear()
         variables.update(prev_variables)
+
+        # Retornar el resultado si lo hay
         return result
+
+
+
 
 class FunctionCall:
     def __init__(self, name, arguments):
@@ -202,11 +210,11 @@ class Return:
     def __init__(self, expression):
         self.expression = expression
 
-    def evaluate(self):
-        return self.expression.evaluate()
-
     def execute(self):
-        return self
+        return self  # Se devuelve a sí misma para ser manejada en el bloque
+
+
+
 
 class List:
     def __init__(self, elements):
@@ -284,6 +292,15 @@ def p_lvalue(p):
     else:
         p[0] = ListAccess(p[1], p[3])
 
+def p_argument_list(p):
+    '''argument_list : argument_list COMMA expression
+                     | expression'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[3]]
+
+
 def p_if_statement(p):
     '''if_statement : IF LPAREN expression RPAREN block
                     | IF LPAREN expression RPAREN block ELSE block'''
@@ -307,6 +324,12 @@ def p_function_definition(p):
     'function_definition : FUNC ID LPAREN parameters RPAREN block'
     functions[p[2]] = Function(p[2], p[4], p[6])
 
+def p_function_call(p):
+    'expression : ID LPAREN argument_list RPAREN'
+    p[0] = FunctionCall(p[1], p[3])
+
+
+
 
 def p_parameters(p):
     '''parameters : parameters COMMA ID
@@ -323,7 +346,8 @@ def p_block(p):
 
 def p_return_statement(p):
     'return_statement : RETURN expression SEMICOLON'
-    p[0] = Return(p[2])
+    p[0] = Return(p[2])  # Se crea un objeto Return que devuelve el valor evaluado de p[2]
+
 
 def p_expression(p):
     '''expression : expression PLUS expression
