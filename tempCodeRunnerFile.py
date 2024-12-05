@@ -224,6 +224,14 @@ class ListAccess:
         list_val = self.list_expr.evaluate()
         index_val = self.index_expr.evaluate()
         return list_val[index_val]
+    
+class ExpressionStatement:
+    def __init__(self, expression):
+        self.expression = expression
+
+    def execute(self):
+        # Ejecuta la expresión (evalúa y muestra el resultado)
+        return self.expression.evaluate()
 
 # ========================
 # REGLAS DE LA GRAMÁTICA
@@ -252,7 +260,7 @@ def p_statement(p):
                  | return_statement
                  | expression SEMICOLON'''
     if len(p) == 3:
-        p[0] = p[1].evaluate()
+        p[0] = ExpressionStatement(p[1])  # Esto es lo que está causando el error
     else:
         p[0] = p[1]
 
