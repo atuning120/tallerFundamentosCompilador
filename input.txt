@@ -41,8 +41,6 @@ for (i=0; i<10; i=i+1;) {
 mission duplicar(a){
     answer 2*a;
 }
-
 show(duplicar(10));
-
 
 

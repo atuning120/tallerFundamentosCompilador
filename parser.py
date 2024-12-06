@@ -214,25 +214,6 @@ class Return:
         return self  # Se devuelve a sí misma para ser manejada en el bloque
 
 
-
-
-class List:
-    def __init__(self, elements):
-        self.elements = [element.evaluate() for element in elements]
-
-    def evaluate(self):
-        return self.elements
-
-class ListAccess:
-    def __init__(self, list_expr, index_expr):
-        self.list_expr = list_expr
-        self.index_expr = index_expr
-
-    def evaluate(self):
-        list_val = self.list_expr.evaluate()
-        index_val = self.index_expr.evaluate()
-        return list_val[index_val]
-
 # ========================
 # REGLAS DE LA GRAMÁTICA
 # ========================
