@@ -100,17 +100,6 @@ class Assign:
         value = self.expression.evaluate()  # Evaluar la expresión antes de asignar
         if isinstance(self.target, Variable):
             variables[self.target.name] = value
-        elif isinstance(self.target, ListAccess):
-            list_obj = self.target.list_expr.evaluate()
-            index = self.target.index_expr.evaluate()
-            if isinstance(list_obj, list):
-                if index < 0:
-                    raise IndexError("Índice negativo no permitido")
-                if index >= len(list_obj):
-                    list_obj.extend([None] * (index - len(list_obj) + 1))
-                list_obj[index] = value
-            else:
-                raise TypeError("El objeto no es una lista")
         else:
             raise ValueError("Invalid assignment target")
 
@@ -270,8 +259,6 @@ def p_lvalue(p):
               | expression LBRACKET expression RBRACKET'''
     if len(p) == 2:
         p[0] = Variable(p[1])
-    else:
-        p[0] = ListAccess(p[1], p[3])
 
 def p_argument_list(p):
     '''argument_list : argument_list COMMA expression
