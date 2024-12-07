@@ -41,6 +41,19 @@ for (i=0; i<10; i=i+1;) {
 mission duplicar(a){
     answer 2*a;
 }
-show(duplicar(10));
+show(duplicar(20));
+
+//LISTAS
+lista = [1, 2, 3];
+
+//mostarr cantidad de elementos de la lista
+show(lista.size());
 
 
+//mostrar un elemento de la lista segun su indice
+show(lista.pick(0));
+
+
+//eliminar un elemento de la lista 
+
+//insertar elementos a la lista 

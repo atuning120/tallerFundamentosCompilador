@@ -5,7 +5,7 @@ tokens = [
     'NUMBER', 'ID', 'EQUALS', 'PLUS', 'MINUS', 'MULT', 'DIVIDE', 'MODULE',
     'LPAREN', 'RPAREN', 'STRING', 'CHAR', 'SEMICOLON', 'LESS', 'GREATER',
     'LESSEQ', 'GREATEREQ', 'LKEY', 'RKEY', 'AND', 'OR', 'NOT', 'BOOLEAN',
-    'EQ', 'NEQ', 'COMMA', 'LBRACKET', 'RBRACKET'
+    'EQ', 'NEQ', 'COMMA', 'LBRACKET', 'RBRACKET','DOT'
 ]
 
 # palabras reservadas 
@@ -18,6 +18,10 @@ reserved = {
     'while': 'WHILE',
     'mission': 'FUNC',
     'answer': 'RETURN',
+    'insert': 'INSERT',    
+    'explode': 'EXPLODE',    
+    'size': 'SIZE',        
+    'pick': 'GET',          
 }
 
 tokens+=list(reserved.values())
@@ -45,6 +49,7 @@ t_NOT = r'!'
 t_COMMA = r','
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
+t_DOT = r'\.'
 
 # Ignorar espacios y tabulacion
 t_ignore = ' \t'

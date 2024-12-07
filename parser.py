@@ -27,7 +27,6 @@ class Number:
     def evaluate(self):
         return self.value
 
-
 class String:
     def __init__(self, value):
         self.value = value
@@ -97,12 +96,14 @@ class Assign:
         self.expression = expression
 
     def execute(self):
-        value = self.expression.evaluate()  # Evaluar la expresión antes de asignar
         if isinstance(self.target, Variable):
+            value = self.expression.evaluate()
             variables[self.target.name] = value
+        elif isinstance(self.target, ListOperation) and self.target.operation == 'set':
+            self.target.value = self.expression
+            self.target.evaluate()
         else:
             raise ValueError("Invalid assignment target")
-
 
 class Print:
     def __init__(self, expressions):
@@ -135,7 +136,6 @@ class Block:
             if isinstance(result, Return):
                 return result.expression.evaluate()
         return None
-
 
 class WhileLoop:
     def __init__(self, condition, block):
@@ -179,9 +179,6 @@ class Function:
         # Retornar el resultado si lo hay
         return result
 
-
-
-
 class FunctionCall:
     def __init__(self, name, arguments):
         self.name = name
@@ -201,6 +198,69 @@ class Return:
 
     def execute(self):
         return self  # Se devuelve a sí misma para ser manejada en el bloque
+
+class List:
+    def __init__(self, elements):
+        self.elements = elements
+
+    def evaluate(self):
+        return [element.evaluate() for element in self.elements]
+
+class ListOperation:
+    def __init__(self, list_expr, operation, argument=None, value=None):
+        self.list_expr = list_expr
+        self.operation = operation
+        self.argument = argument
+        self.value = value
+
+    def evaluate(self):
+        list_val = self.list_expr.evaluate()
+        if self.operation == 'insert':
+            if self.argument is None:
+                raise ValueError("insert() requiere un argumento")
+            # Supongamos que insert actúa como append
+            list_val.append(self.argument.evaluate())
+            print(f"Elemento insertado: {self.argument.evaluate()}")  # Depuración
+            return list_val
+        elif self.operation == 'explode':
+            if self.argument is None:
+                raise ValueError("explode() requiere un índice")
+            index = self.argument.evaluate()
+            try:
+                removed_element = list_val.pop(index)
+                print(f"Elemento removido en posición {index}: {removed_element}")  # Depuración
+                return list_val
+            except IndexError:
+                raise IndexError(f"explode(): Índice {index} fuera de rango")
+        elif self.operation == 'get':
+            if self.argument is None:
+                raise ValueError("get() requiere un índice")
+            index = self.argument.evaluate()
+            try:
+                return list_val[index]
+            except IndexError:
+                raise IndexError(f"get(): Índice {index} fuera de rango")
+        elif self.operation == 'size':
+            return len(list_val)
+        elif self.operation == 'set':
+            if self.argument is None or self.value is None:
+                raise ValueError("set() requiere un índice y un valor")
+            index = self.argument.evaluate()
+            value = self.value.evaluate()
+            try:
+                list_val[index] = value
+                print(f"Elemento en posición {index} actualizado a: {value}")  # Depuración
+            except IndexError:
+                raise IndexError(f"set(): Índice {index} fuera de rango")
+            return list_val
+        else:
+            raise ValueError(f"Método de lista desconocido '{self.operation}'")
+        return list_val
+
+
+    def execute(self):
+        # Para operaciones que modifican la lista sin retornar valor
+        self.evaluate()
 
 
 # ========================
@@ -234,13 +294,9 @@ def p_statement(p):
     else:
         p[0] = p[1]
 
-
-
 def p_print_statement(p):
     'print_statement : PRINT LPAREN print_arguments RPAREN SEMICOLON'
     p[0] = Print(p[3])
-
-
 
 def p_print_arguments(p):
     '''print_arguments : print_arguments COMMA expression
@@ -259,6 +315,9 @@ def p_lvalue(p):
               | expression LBRACKET expression RBRACKET'''
     if len(p) == 2:
         p[0] = Variable(p[1])
+    else:
+        # Para asignar a un índice específico de una lista
+        p[0] = ListOperation(p[1], 'set', p[3])
 
 def p_argument_list(p):
     '''argument_list : argument_list COMMA expression
@@ -268,7 +327,6 @@ def p_argument_list(p):
     else:
         p[0] = p[1] + [p[3]]
 
-
 def p_if_statement(p):
     '''if_statement : IF LPAREN expression RPAREN block
                     | IF LPAREN expression RPAREN block ELSE block'''
@@ -277,16 +335,13 @@ def p_if_statement(p):
     else:
         p[0] = IfElse(p[3], p[5], p[7])
 
-
 def p_while_statement(p):
     'while_statement : WHILE LPAREN expression RPAREN block'
     p[0] = WhileLoop(p[3], p[5])
 
-
 def p_for_statement(p):
     '''for_statement : FOR LPAREN assign_statement expression SEMICOLON assign_statement RPAREN block'''
     p[0] = ForLoop(p[3], p[4], p[6], p[8])
-
 
 def p_function_definition(p):
     'function_definition : FUNC ID LPAREN parameters RPAREN block'
@@ -295,9 +350,6 @@ def p_function_definition(p):
 def p_function_call(p):
     'expression : ID LPAREN argument_list RPAREN'
     p[0] = FunctionCall(p[1], p[3])
-
-
-
 
 def p_parameters(p):
     '''parameters : parameters COMMA ID
@@ -314,10 +366,28 @@ def p_block(p):
 
 def p_return_statement(p):
     'return_statement : RETURN expression SEMICOLON'
-    p[0] = Return(p[2])  # Se crea un objeto Return que devuelve el valor evaluado de p[2]
+    p[0] = Return(p[2])
+
+# Reglas específicas para métodos de lista
+def p_expression_insert(p):
+    'expression : expression DOT INSERT LPAREN expression RPAREN'
+    p[0] = ListOperation(p[1], 'insert', p[5])
+
+def p_expression_explode(p):
+    'expression : expression DOT EXPLODE LPAREN expression RPAREN'
+    p[0] = ListOperation(p[1], 'explode', p[5])
 
 
-def p_expression(p):
+def p_expression_size(p):
+    'expression : expression DOT SIZE LPAREN RPAREN'
+    p[0] = ListOperation(p[1], 'size')
+
+def p_expression_get(p):
+    'expression : expression DOT GET LPAREN expression RPAREN'
+    p[0] = ListOperation(p[1], 'get', p[5])
+
+
+def p_expression_general(p):
     '''expression : expression PLUS expression
                   | expression MINUS expression
                   | expression MULT expression
@@ -338,7 +408,8 @@ def p_expression(p):
                   | STRING
                   | CHAR
                   | BOOLEAN
-                  | ID'''
+                  | ID
+                  | LBRACKET list_elements RBRACKET'''
     if len(p) == 2:  # Valores primitivos o variables
         if isinstance(p[1], int) or isinstance(p[1], float):  # Números
             p[0] = Number(p[1])
@@ -351,19 +422,27 @@ def p_expression(p):
                 p[0] = Boolean(p[1])
             else:  # Es un ID
                 p[0] = Variable(p[1])
-        else:
-            p[0] = p[1]
     elif len(p) == 3:  # Operadores unarios
         if p[1] == '-':
             p[0] = BinOp(Number(0), '-', p[2])
         else:
             p[0] = NotOp(p[2])
-    elif len(p) == 4:  # Operadores binarios o agrupación
-        if p[1] == '(':
+    elif len(p) == 4:
+        if p[1] == '(':  # Agrupación
             p[0] = p[2]
-        else:
+        elif p[1] == '[':  # Lista
+            p[0] = List(p[2])
+        else:  # Operadores binarios
             p[0] = BinOp(p[1], p[2], p[3])
+    return
 
+def p_list_elements(p):
+    '''list_elements : expression
+                     | list_elements COMMA expression'''
+    if len(p) == 2:  # Un solo elemento
+        p[0] = [p[1]]  # `p[1]` ya debería ser un objeto con `evaluate`
+    else:  # Más de un elemento
+        p[0] = p[1] + [p[3]]  # Combina la lista acumulada con el nuevo elemento
 
 def p_empty(p):
     'empty :'
