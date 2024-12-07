@@ -1,7 +1,6 @@
 import ply.yacc as yacc
 from lexico import tokens
 
-# Diccionarios para almacenar variables y funciones en tiempo de ejecución
 variables = {}
 functions = {}
 
@@ -17,9 +16,7 @@ precedence = (
     ('right', 'UMINUS'),
 )
 
-# ========================
-# CLASES DEL AST (Árbol de Sintaxis Abstracta)
-# ========================
+
 class Number:
     def __init__(self, value):
         self.value = value
@@ -34,10 +31,6 @@ class String:
     def evaluate(self):
         return self.value
 
-class Char:
-    def __init__(self, value):
-        self.value = value
-
     def evaluate(self):
         return self.value
 
@@ -47,6 +40,20 @@ class Boolean:
 
     def evaluate(self):
         return self.value
+
+class Input:
+    def __init__(self, target):
+        self.target = target  # Debería ser una instancia de Variable
+
+    def execute(self):
+        try:
+            # Leer la entrada del usuario
+            user_input = input()
+            # Asignar la entrada a la variable
+            variables[self.target.name] = user_input
+            print(f"Asignado: {self.target.name} = {user_input}")  # Mensaje de depuración
+        except Exception as e:
+            print(f"Error al leer la entrada: {e}")
 
 class Variable:
     def __init__(self, name):
@@ -104,6 +111,8 @@ class Assign:
             self.target.evaluate()
         else:
             raise ValueError("Invalid assignment target")
+
+
 
 class Print:
     def __init__(self, expressions):
@@ -257,20 +266,19 @@ class ListOperation:
             raise ValueError(f"Método de lista desconocido '{self.operation}'")
         return list_val
 
-
     def execute(self):
         # Para operaciones que modifican la lista sin retornar valor
         self.evaluate()
 
 
-# ========================
-# REGLAS DE LA GRAMÁTICA
-# ========================
+
+
 def p_program(p):
     'program : statement_list'
     statements = [stmt for stmt in p[1] if stmt is not None]
     for statement in statements:
         statement.execute()
+
 
 def p_statement_list(p):
     '''statement_list : statement_list statement
@@ -288,11 +296,17 @@ def p_statement(p):
                  | for_statement
                  | function_definition
                  | return_statement
+                 | input_statement
                  | expression SEMICOLON'''
     if len(p) == 3:
         p[0] = p[1].evaluate()
     else:
         p[0] = p[1]
+
+def p_input_statement(p):
+    'input_statement : INPUT LPAREN lvalue RPAREN SEMICOLON'
+    p[0] = Input(p[3])
+
 
 def p_print_statement(p):
     'print_statement : PRINT LPAREN print_arguments RPAREN SEMICOLON'
@@ -318,6 +332,9 @@ def p_lvalue(p):
     else:
         # Para asignar a un índice específico de una lista
         p[0] = ListOperation(p[1], 'set', p[3])
+
+
+
 
 def p_argument_list(p):
     '''argument_list : argument_list COMMA expression
@@ -377,7 +394,6 @@ def p_expression_explode(p):
     'expression : expression DOT EXPLODE LPAREN expression RPAREN'
     p[0] = ListOperation(p[1], 'explode', p[5])
 
-
 def p_expression_size(p):
     'expression : expression DOT SIZE LPAREN RPAREN'
     p[0] = ListOperation(p[1], 'size')
@@ -385,6 +401,7 @@ def p_expression_size(p):
 def p_expression_get(p):
     'expression : expression DOT GET LPAREN expression RPAREN'
     p[0] = ListOperation(p[1], 'get', p[5])
+
 
 
 def p_expression_general(p):
@@ -406,7 +423,6 @@ def p_expression_general(p):
                   | LPAREN expression RPAREN
                   | NUMBER
                   | STRING
-                  | CHAR
                   | BOOLEAN
                   | ID
                   | LBRACKET list_elements RBRACKET'''
@@ -416,8 +432,6 @@ def p_expression_general(p):
         elif isinstance(p[1], str):
             if p.slice[1].type == "STRING":
                 p[0] = String(p[1])
-            elif p.slice[1].type == "CHAR":
-                p[0] = Char(p[1])
             elif p.slice[1].type == "BOOLEAN":
                 p[0] = Boolean(p[1])
             else:  # Es un ID
@@ -435,6 +449,8 @@ def p_expression_general(p):
         else:  # Operadores binarios
             p[0] = BinOp(p[1], p[2], p[3])
     return
+
+
 
 def p_list_elements(p):
     '''list_elements : expression

@@ -3,7 +3,7 @@ import ply.lex as lex
 # tokens
 tokens = [
     'NUMBER', 'ID', 'EQUALS', 'PLUS', 'MINUS', 'MULT', 'DIVIDE', 'MODULE',
-    'LPAREN', 'RPAREN', 'STRING', 'CHAR', 'SEMICOLON', 'LESS', 'GREATER',
+    'LPAREN', 'RPAREN', 'STRING', 'SEMICOLON', 'LESS', 'GREATER',
     'LESSEQ', 'GREATEREQ', 'LKEY', 'RKEY', 'AND', 'OR', 'NOT', 'BOOLEAN',
     'EQ', 'NEQ', 'COMMA', 'LBRACKET', 'RBRACKET','DOT'
 ]
@@ -18,8 +18,8 @@ reserved = {
     'while': 'WHILE',
     'mission': 'FUNC',
     'answer': 'RETURN',
-    'insert': 'INSERT',    
-    'explode': 'EXPLODE',    
+    'insert': 'INSERT',
+    'explode': 'EXPLODE',     
     'size': 'SIZE',        
     'pick': 'GET',          
 }
@@ -61,10 +61,6 @@ def t_STRING(t):
     return t
 
 # Token para caracteres individuales
-def t_CHAR(t):
-    r'\"([^\\\n]|(\\.))\"' # utiliza comillas dobles
-    t.value = t.value[1:-1]
-    return t
 
 # Token para booleanos 
 def t_BOOLEAN(t):

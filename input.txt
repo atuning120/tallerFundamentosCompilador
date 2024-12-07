@@ -16,6 +16,10 @@ show("La suma de x e y es:", z);
 show("pi: ", pi);
 show(texto);
 
+//INPUTS de variables
+input(variable);
+show("hola, ", variable);
+
 
 //CONTROL DE FLUJO
 // Condicionales
@@ -57,3 +61,4 @@ show(lista.pick(0));
 //eliminar un elemento de la lista 
 
 //insertar elementos a la lista 
+
